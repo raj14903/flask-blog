@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    {{ form.name.label(class="form-label") }}<br>
+    {{ form.name(class="form-control mb-3") }}<br><br>
+
+    {{ form.email.label(class="form-label") }}<br>
+    {{ form.email(class="form-control") }}<br><br>
+
+    {{ form.password.label(class="form-label") }}<br>
+    {{ form.password(class="form-control") }}<br><br>
+    <br/>
+    {{ form.submit(class="btn btn-primary") }}
+
+{% endblock content %}
