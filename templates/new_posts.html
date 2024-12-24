@@ -1,0 +1,24 @@
+{% extends "layout.html" %} {% block
+    content %}
+    <form method="POST" enctype="multipart/form-data">
+      <h3>New Posts</h3>
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" class="form-control" id="title" name="title" placeholder="Enter title" />
+      </div>
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" class="form-control" id="location" name="location" placeholder="Enter location" />
+      </div>
+      <div class="form-group">
+        <label for="text">Text</label>
+        <textarea type="text" class="form-control" id="text" name="text" placeholder="Enter text" rows="5" cols="40"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="image">Image</label>
+        <input type="file" class="form-control" id="image" name="image" />
+      </div>
+      <br />
+      <button type="submit" class="btn btn-primary">Submt</button>
+    </form>
+    {% endblock %}

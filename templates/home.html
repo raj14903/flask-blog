@@ -1,4 +1,29 @@
 {% extends "layout.html" %}
+
+
 {% block content %}
-    
-{% endblock content %}
+  <h1>{% block header %}Posts{% endblock %}</h1>
+  <div id="posts">
+    {% for post in posts %}
+    <div class="card border-dark">
+      <div class="card-body">
+        <div class="card-text"><h5>{{post.title}}</h5></div>
+        <div class="card-text"><h6>Location: {{post.location}}</h6></div>
+        
+        <div class="card-text"><h6>By {{post.users.first_name}}</h6></div>
+        <div class="card-text">{{post.text}}</div>
+        <br/>
+        
+      </div>
+    </div>
+    <br/> {% endfor %}
+  </div>
+  {% block footer %}
+  <div>
+    <a href="new_posts"
+      ><button type="button" class="btn btn-primary btn-lg">
+        Create a Post
+      </button></a
+    >
+  </div>
+  {% endblock %} {% endblock %}

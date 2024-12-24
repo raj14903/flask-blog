@@ -16,6 +16,7 @@ class Post(db.Model):
     p_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100)) 
     data = db.Column(db.String(100000))
+    image_filename = db.Column(db.String(100), nullable=True)
     users_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 

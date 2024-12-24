@@ -5,19 +5,14 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_user, UserMixin, current_user, logout_user, login_required, LoginManager
 from werkzeug.security import generate_password_hash, check_password_hash
-from werkzeug.utils import secure_filename
-import os
+
 app = Flask(__name__)
 DB_NAME = "blogdatabase.db"
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'images')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 db = SQLAlchemy(app)
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
@@ -38,7 +33,6 @@ class Post(db.Model):
     title = db.Column(db.String(100), nullable=False) 
     text = db.Column(db.String(100000), nullable=False)
     location = db.Column(db.String(100), nullable=False)
-    image_filename = db.Column(db.String(10000))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 @app.route('/')
@@ -107,31 +101,25 @@ def new_post():
 
         if not text:
             flash('Post cannot be empty', category='error')
-        if 'image' not in request.files:
-            flash('No image part', category='error')
-            return redirect(request.url)
-        
-        file = request.files['image']
-        
-        if file.filename == '':
-            flash('No selected image', category='error')
-            return redirect(request.url)
-        
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-      
-            # Create a new post with the image filename
-            post = Post(title=title, text=text, location=location, image_filename=filename, user_id=current_user.id)
+        else:
+            post = Post(title=title, text=text, location=location, user_id=current_user.id)
             db.session.add(post)
             db.session.commit()
             flash('Post created!', category='success')
             return redirect(url_for('home'))
-        else:
-            flash('Invalid image file', category='error')
-            return redirect(request.url)
-    
     return render_template("new_posts.html", user=current_user)
+
+@app.route('/delete_post/<int:post_id>', methods=['GET', 'POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.user_id == current_user.id:
+        db.session.delete(post)
+        db.session.commit()
+        flash('Post deleted successfully!', category='success')
+    else:
+        flash('You are not authorized to delete this post!', category='error')
+    return redirect(url_for('home'))
 
 class Register(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(min=2, max=20)])
